@@ -1,6 +1,27 @@
 import pandas as pd
 import numpy as np
 
+# Kullanılacak özellikler
+# Soil Texture (Sand, Silt, Clay %): Toprak dokusu (Kum, Silt, Kil %)
+# pH: Toprak pH değeri
+# Oranic Matter (%): Organik madde oranı
+# Nitrogen (N) (%): Azot oranı
+# Phosphorus (P) (ppm): Fosfor oranı
+# Potassium (K) (ppm): Potasyum oranı
+# Mositure Content (%): Toprak nem oranı
+# Electrical Conductivity (dS/m): Elektriksel iletkenlik
+# Soil Temperature (°C): Toprak sıcaklığı
+
+# Ölçümü zor olan özellikler
+# Cation Exchange Capacity (meq/100g): Kation değişim kapasitesi
+# Calcium (Ca) (meq/100g): Kalsiyum oranı
+# Magnesium (Mg) (meq/100g): Magnezyum oranı
+# Sulphur (S) (ppm): Kükürt oranı
+# Micronutrients(Ze,Fn,Mn,Cu,B) (ppm): Mikro besin elementleri oranı
+
+# Kesin ölçüm için 12 değer gereklidir
+# Şimdilik Shallow-Rooted Crops That Can Be Grown in Turkey (0–60 cm Root Depth) olan ürünler ile ilerlenecek
+
 # Türkiye'deki ürünler ve özelliklerine uygun değer aralıkları
 products = {
    "Buğday": {
