@@ -52,12 +52,8 @@ const App = () => {
   // Sensör verilerini ESP'den çekip, sunucuya gönderme işlemini yapan fonksiyon
   const sendDataToServer = async (data: SensorData) => {
     try {
-      const response = await fetch('http://your-server-endpoint/api/sensordata', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+      const response = await fetch('http://127.0.0.1:8000/myapp/start', {
+        method: 'GET',
       });
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
