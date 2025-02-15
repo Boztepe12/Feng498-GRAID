@@ -1,3 +1,4 @@
+import EspRecivedList from '@/components/ui/espRecivedList';
 import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
@@ -199,6 +200,8 @@ const App = () => {
         <Text style={styles.label}>Potassium:</Text>
         <Text style={styles.value}>{sensorData.potassium}</Text>
       </View>
+        
+      <EspRecivedList />
     </ScrollView>
   );
 };
