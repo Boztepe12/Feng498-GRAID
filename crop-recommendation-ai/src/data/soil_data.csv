@@ -1,0 +1,11 @@
+Soil Type,Crop Type,PH Level,Moisture Level,Nutrient Level
+Clay,Wheat,6.5,30,70
+Sandy,Corn,6.0,20,50
+Loamy,Rice,6.8,25,60
+Silty,Barley,6.2,35,80
+Peaty,Potato,5.5,40,65
+Chalky,Tomato,7.0,15,55
+Saline,Cabbage,7.2,10,45
+Clay,Barley,6.5,30,75
+Sandy,Wheat,6.0,20,55
+Loamy,Corn,6.8,25,65
