@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'graid_app',
+    'corsheaders',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +50,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [ # TODO If needed, change the URLs of the frontend and backend servers here
+    "http://localhost:3000", # Flutter web app URL
+    "http://127.0.0.1:8000", # DJango server URL
+    "https://graid_app.com" # Live server URL
 ]
 
 ROOT_URLCONF = 'graid_api.urls'
@@ -79,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': '123',
+        'PASSWORD': '2002',
         'HOST': 'localhost',
         'PORT': '5432',
         'OPTIONS': {

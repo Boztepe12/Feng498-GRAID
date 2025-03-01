@@ -1,2 +1,6 @@
 pandas
 numpy
+Django
+django-cors-headers
+djangorestframework
+psycopg2 
