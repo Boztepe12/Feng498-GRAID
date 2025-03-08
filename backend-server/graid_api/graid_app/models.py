@@ -6,3 +6,15 @@ class Crop(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Soil(models.Model):
+    ph = models.FloatField()
+    temperature = models.FloatField()
+    humidity = models.FloatField()
+    nitrogen = models.FloatField()
+    phosphorus = models.FloatField()
+    potassium = models.FloatField()
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Soil data for {self.crop.name}"

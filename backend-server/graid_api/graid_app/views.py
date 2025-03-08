@@ -5,16 +5,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 import json
+from .models import Crop, Soil
 
 @api_view(['POST'])
 def receive_data(request):
     try:
         if request.method == 'POST':
-            try:
-                received_data = json.loads(request.body)
-            except json.JSONDecodeError:
-                raise ValidationError("Invalid JSON data")
+            received_data = request.data
+            
             # TODO Data processing will be done here (Can be done in other method)
+            add_soil_data(received_data) # This funcition is here just for now to trying if it is adding to database
             return Response({"message": "Data has been received", "received_data": received_data}, status=status.HTTP_200_OK)
     except ValidationError as ve:
         return Response({"error": str(ve)}, status=status.HTTP_400_BAD_REQUEST)
@@ -33,6 +33,23 @@ def send_data(request):
         return Response({"message": "Processed data sent", "data": processed_data}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": "An unexpected error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+def add_soil_data(soil_data):
+    # Adding soil data to database
+    crop_name = soil_data.get('crop_name')
+    crop, created = Crop.objects.get_or_create(name=crop_name) #created is a boolean value 
+    # I put created value if we will need it in the future
+    soil = Soil(
+        ph=soil_data.get('ph'),
+        temperature=soil_data.get('temperature'),
+        humidity=soil_data.get('humidity'),
+        nitrogen=soil_data.get('nitrogen'),
+        phosphorus=soil_data.get('phosphorus'),
+        potassium=soil_data.get('potassium'),
+        crop=crop
+    )
+    soil.save()
+
     
 
 def test(request):
