@@ -3,31 +3,21 @@
 import pandas as pd
 from services.recommendation_service import RecommendationService
 from utils.file_reader import read_csv
+from models.recommendation_model import RecommendationModel
 
 def main():
     # Load soil data
     soil_data = read_csv('data/soil_data.csv')
     
+    
+    # Initialize the recommendation model
+    recommendation_model = RecommendationModel(soil_data)
+    
     # Initialize the recommendation service
-    recommendation_service = RecommendationService(soil_data)
+    recommendation_service = RecommendationService(recommendation_model)
+    recommendation_service.train()
     
-    # Example server input (this could be replaced with actual server input handling)
-    user_input = {
-        'ph': 6.5,
-        'nitrogen': 50,
-        'phosphorus': 30,
-        'potassium': 40,
-        'temperature': 25,
-        'rainfall': 100
-    }
     
-    # Get crop recommendations
-    recommendations = recommendation_service.get_recommendations(user_input)
-    
-    # Print recommendations
-    print("Recommended crops based on the provided soil data:")
-    for crop in recommendations:
-        print(crop)
 
 if __name__ == "__main__":
     main()
