@@ -86,13 +86,13 @@ WSGI_APPLICATION = 'graid_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
+        'NAME': 'graid_db',
         'USER': 'postgres',
         'PASSWORD': '2002',
         'HOST': 'localhost',
         'PORT': '5432',
         'OPTIONS': {
-            'client_encoding': 'LATIN1',
+            'client_encoding': 'UTF8',
         },
     }
 }

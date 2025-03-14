@@ -46,6 +46,8 @@ def add_soil_data(soil_data):
         nitrogen=soil_data.get('nitrogen'),
         phosphorus=soil_data.get('phosphorus'),
         potassium=soil_data.get('potassium'),
+        ec=soil_data.get('ec'),
+        soilMoisture=soil_data.get('soilMoisture'),
         crop=crop
     )
     soil.save()

@@ -9,8 +9,10 @@ class Crop(models.Model):
     
 class Soil(models.Model):
     ph = models.FloatField()
+    ec = models.FloatField()
     temperature = models.FloatField()
     humidity = models.FloatField()
+    soilMoisture = models.FloatField()
     nitrogen = models.FloatField()
     phosphorus = models.FloatField()
     potassium = models.FloatField()
