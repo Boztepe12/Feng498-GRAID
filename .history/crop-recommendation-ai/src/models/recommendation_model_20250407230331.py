@@ -1,12 +1,19 @@
 # File: c:\Users\Ege Deniz\Documents\GitHub\Feng498-GRAID\crop-recommendation-ai\src\models\recommendation_model.py
 
 from sklearn.model_selection import cross_val_score, StratifiedKFold, train_test_split, GridSearchCV
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-
+from sklearn.tree import DecisionTreeClassifier
+from xgboost import XGBClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
-
-
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 class RecommendationModel:
