@@ -1,6 +1,5 @@
 # filepath: c:\Users\Ege Deniz\Documents\GitHub\Feng498-GRAID\backend-server\graid_api\graid_app\apps.py
 from django.apps import AppConfig
-from .recommendation_ai.src.services.recommendation_service import RecommendationService
 import threading
 
 class GraidAppConfig(AppConfig):

@@ -54,7 +54,6 @@ MIDDLEWARE = [
 ]
 ALLOWED_HOSTS = [
     'localhost',
-    '127.0.0.1',
 ]
 CORS_ALLOWED_ORIGINS = [ # TODO If needed, change the URLs of the frontend and backend servers here
     "http://localhost:3000",# Flutter web app URL

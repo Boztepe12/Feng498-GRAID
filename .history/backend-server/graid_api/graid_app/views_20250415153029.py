@@ -1,20 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse # For test URL
-from rest_framework.decorators import api_view # type: ignore
-from rest_framework.response import Response # type: ignore
-from rest_framework import status # type: ignore
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.exceptions import ValidationError
 import json
 from .models import Crop, Soil
 from .recommendation_ai.src.services.recommendation_service import RecommendationService
 from .recommendation_ai.src.models.recommendation_model import RecommendationModel
+
 import pandas as pd
-import requests
-
-
-
-recommendation_service = None
-
 @api_view(['POST'])
 def receive_data(request):
     try:
@@ -34,31 +29,19 @@ def receive_data(request):
     except Exception as e:
         return Response({"error": "An unexpected error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-def send_confirmation():
+@api_view(['GET'])
+def send_data(request):
     try:
-        # Example URL and payload for the POST request
-        url = "http://192.168.4.1:80/saveMeAsServer"
-        payload = {
-            "confirmationNum": "klj64!90jkolas"
+        # Processed data to be sent
+        processed_data = {
+            "crop_name": "Velvet Cotton",
+            "percentage_of_choice": 80,
+            "AI's comment": "This crop is best suited for your farm"
         }
-
-        # Sending the POST request
-        response = requests.post(url, json=payload)
-
-        # Handling the response
-        if response.status_code == 200:
-            response_data = response.json()
-
-        else:
-            response_data = {"error": f"Failed to fetch data, status code: {response.status_code}"}
-
-        return response_data
+        return Response({"message": "Processed data sent", "data": processed_data}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": "An unexpected error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-
-
 def add_soil_data(soil_data):
     # Adding soil data to database
     crop_name = soil_data.get('crop_name')
@@ -78,19 +61,6 @@ def add_soil_data(soil_data):
     soil.save()
 
 
-
-def train_model():
-    global recommendation_service
-
-    soil_data = pd.read_csv('graid_app/recommendation_ai/src/data/soil_data.csv')
-    
-    recommendation_model = RecommendationModel(soil_data)
-    recommendation_service = RecommendationService(recommendation_model)
-    recommendation_service.train()
-    print("Training model...")
-    
-
-
 def getValues(soil_data):
     ph=soil_data.get('ph'),
     temperature=soil_data.get('temperature'),
@@ -103,10 +73,15 @@ def getValues(soil_data):
 
 
 def getAIRecommendation(user_input):
-    global recommendation_service
+    print(user_input)
+    soil_data = pd.read_csv('graid_app/recommendation_ai/src/data/soil_data.csv')
+    
+    recommendation_model = RecommendationModel(soil_data)
+    recommendation_service = RecommendationService(recommendation_model)
+    recommendation_service.train()
+
     recommended_crop = recommendation_service.predict(user_input)
     return recommended_crop
-
 
 def test(request):
     return HttpResponse("Hello, world. You're at the Test View.")

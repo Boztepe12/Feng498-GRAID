@@ -13,7 +13,7 @@ import requests
 
 
 
-recommendation_service = None
+
 
 @api_view(['POST'])
 def receive_data(request):
@@ -80,15 +80,13 @@ def add_soil_data(soil_data):
 
 
 def train_model():
-    global recommendation_service
-
     soil_data = pd.read_csv('graid_app/recommendation_ai/src/data/soil_data.csv')
     
     recommendation_model = RecommendationModel(soil_data)
     recommendation_service = RecommendationService(recommendation_model)
     recommendation_service.train()
     print("Training model...")
-    
+    return recommendation_service
 
 
 def getValues(soil_data):
@@ -103,7 +101,7 @@ def getValues(soil_data):
 
 
 def getAIRecommendation(user_input):
-    global recommendation_service
+    recommendation_service = train_model()
     recommended_crop = recommendation_service.predict(user_input)
     return recommended_crop
 

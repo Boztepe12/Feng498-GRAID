@@ -20,5 +20,3 @@ class Soil(models.Model):
 
     def __str__(self):
         return f"Soil data for {self.crop.name}"
-
- 

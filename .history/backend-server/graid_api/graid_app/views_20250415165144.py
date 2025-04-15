@@ -12,9 +12,6 @@ import pandas as pd
 import requests
 
 
-
-recommendation_service = None
-
 @api_view(['POST'])
 def receive_data(request):
     try:
@@ -77,20 +74,8 @@ def add_soil_data(soil_data):
     )
     soil.save()
 
-
-
 def train_model():
-    global recommendation_service
-
-    soil_data = pd.read_csv('graid_app/recommendation_ai/src/data/soil_data.csv')
-    
-    recommendation_model = RecommendationModel(soil_data)
-    recommendation_service = RecommendationService(recommendation_model)
-    recommendation_service.train()
     print("Training model...")
-    
-
-
 def getValues(soil_data):
     ph=soil_data.get('ph'),
     temperature=soil_data.get('temperature'),
@@ -103,10 +88,14 @@ def getValues(soil_data):
 
 
 def getAIRecommendation(user_input):
-    global recommendation_service
+    soil_data = pd.read_csv('graid_app/recommendation_ai/src/data/soil_data.csv')
+    
+    recommendation_model = RecommendationModel(soil_data)
+    recommendation_service = RecommendationService(recommendation_model)
+    recommendation_service.train()
+
     recommended_crop = recommendation_service.predict(user_input)
     return recommended_crop
-
 
 def test(request):
     return HttpResponse("Hello, world. You're at the Test View.")

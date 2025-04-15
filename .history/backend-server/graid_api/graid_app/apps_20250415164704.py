@@ -1,6 +1,5 @@
 # filepath: c:\Users\Ege Deniz\Documents\GitHub\Feng498-GRAID\backend-server\graid_api\graid_app\apps.py
 from django.apps import AppConfig
-from .recommendation_ai.src.services.recommendation_service import RecommendationService
 import threading
 
 class GraidAppConfig(AppConfig):
@@ -8,9 +7,8 @@ class GraidAppConfig(AppConfig):
     name = 'graid_app'
 
     def ready(self):
-        
-        from .views import train_model,send_confirmation
+        # Import the function you want to fire
+        from .views import some_function_to_fire
 
-        
-        threading.Thread(target=send_confirmation).start()
-        threading.Thread(target=train_model).start()
+        # Run the function in a separate thread to avoid blocking the server
+        threading.Thread(target=some_function_to_fire).start()

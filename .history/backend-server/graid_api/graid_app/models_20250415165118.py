@@ -21,4 +21,10 @@ class Soil(models.Model):
     def __str__(self):
         return f"Soil data for {self.crop.name}"
 
- 
+class Model(models.Model):
+    name = models.CharField(max_length=100)
+    model_path = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-2565fgeauel073icgqy6rohg0-k^^+2@5gs-2ipo7kwz&*9)mq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -54,10 +54,9 @@ MIDDLEWARE = [
 ]
 ALLOWED_HOSTS = [
     'localhost',
-    '127.0.0.1',
 ]
 CORS_ALLOWED_ORIGINS = [ # TODO If needed, change the URLs of the frontend and backend servers here
-    "http://localhost:3000",# Flutter web app URL
+    "http://localhost",# Flutter web app URL
     "http://127.0.0.1:8000", # DJango server URL
     "https://graid_app.com" # Live server URL
 ]
