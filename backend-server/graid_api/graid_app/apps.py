@@ -9,8 +9,9 @@ class GraidAppConfig(AppConfig):
 
     def ready(self):
         
-        from .views import train_model,send_confirmation
+        from .views import train_model,start_mqtt
 
         
-        threading.Thread(target=send_confirmation).start()
+        threading.Thread(target=start_mqtt).start()
         threading.Thread(target=train_model).start()
+

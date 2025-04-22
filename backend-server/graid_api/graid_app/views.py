@@ -5,15 +5,90 @@ from rest_framework.response import Response # type: ignore
 from rest_framework import status # type: ignore
 from rest_framework.exceptions import ValidationError
 import json
+import random
 from .models import Crop, Soil
 from .recommendation_ai.src.services.recommendation_service import RecommendationService
 from .recommendation_ai.src.models.recommendation_model import RecommendationModel
 import pandas as pd
 import requests
 
+import threading
+import time
+from django.http import JsonResponse
+import paho.mqtt.client as mqtt
+
+# Global list to store messages temporarily
+mqtt_messages = []
+
+# MQTT Config
+MQTT_BROKER = "a6faa28a33914e9bba541e6ec9da0741.s1.eu.hivemq.cloud"  # e.g., "abc123.s2.eu.hivemq.cloud"
+MQTT_PORT = 8883  # For SSL (HiveMQ Cloud)
+MQTT_USERNAME = "boztepe"
+MQTT_PASSWORD = "Deneme123"
+MQTT_TOPIC_SUBSCRIBE = "#"  # Subscribe to all topics (wildcard), or change to a specific one
+MQTT_TOPIC_PUBLISH = "status/backend"
+  # Topic to publish to
+
+
+# MQTT Callbacks
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("✅ Connected to HiveMQ Broker")
+        client.subscribe(MQTT_TOPIC_SUBSCRIBE)
+        # client.publish(MQTT_TOPIC_PUBLISH,'Subscribed')
+    else:
+        print(f"❌ Failed to connect, return code {rc}")
+
+def on_message(client, userdata, msg):
+    if (msg.topic == 'esp32/data'):
+        # Decode the message payload and convert to JSON
+        try:
+            payload = json.loads(msg.payload.decode())
+            # Add the received data to the database
+            message = f"Topic: {msg.topic}, Message: {payload}"
+            print(message)
+            mqtt_messages.append(message)
+
+            recommendations = getAIRecommendation(getValues(payload))
+            print("Recommended Crop: ", recommendations)
+            client.publish(MQTT_TOPIC_PUBLISH, json.dumps(recommendations))
+
+
+            # add_soil_data(payload)
+        except json.JSONDecodeError:
+            print("❌ Failed to decode JSON from message payload")
+            return
+    
+
+# MQTT Start Function
+mqtt_started = False
+def start_mqtt():
+    global mqtt_started
+    if mqtt_started:
+        return
+    mqtt_started = True
+
+    client = mqtt.Client()
+    client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
+    client.on_connect = on_connect
+    client.on_message = on_message
+
+    # For HiveMQ Cloud, use SSL/TLS
+    client.tls_set()  # Use default certificates
+
+    client.connect(MQTT_BROKER, MQTT_PORT, 60)
+
+    # thread = threading.Thread(target=client.loop_forever)
+    # thread.daemon = True
+    # thread.start()
+
+
+
+
 
 
 recommendation_service = None
+
 
 @api_view(['POST'])
 def receive_data(request):
