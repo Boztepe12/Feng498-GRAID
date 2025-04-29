@@ -26,7 +26,7 @@ MQTT_PORT = 8883  # For SSL (HiveMQ Cloud)
 MQTT_USERNAME = "boztepe"
 MQTT_PASSWORD = "Deneme123"
 MQTT_TOPIC_SUBSCRIBE = "#"  # Subscribe to all topics (wildcard), or change to a specific one
-MQTT_TOPIC_PUBLISH = "status/backend"
+MQTT_TOPIC_PUBLISH = "graid/measurement"
   # Topic to publish to
 
 
@@ -40,24 +40,37 @@ def on_connect(client, userdata, flags, rc):
         print(f"❌ Failed to connect, return code {rc}")
 
 def on_message(client, userdata, msg):
-    if (msg.topic == 'esp32/data'):
+    if (msg.topic == 'graid/getMeasurements'):
         # Decode the message payload and convert to JSON
         try:
             payload = json.loads(msg.payload.decode())
-            # Add the received data to the database
-            message = f"Topic: {msg.topic}, Message: {payload}"
-            print(message)
-            mqtt_messages.append(message)
+             # Check if the payload contains a "measurements" key
+            if "measurements" in payload and isinstance(payload["measurements"], list):
+                measurements = payload["measurements"]
 
-            recommendations = getAIRecommendation(getValues(payload))
-            print("Recommended Crop: ", recommendations)
-            client.publish(MQTT_TOPIC_PUBLISH, json.dumps(recommendations))
+                # Add each measurement to the database
+                # for measurement in measurements:
+                #     add_soil_data(measurement)
 
+                # Calculate the mean values for all measurements
+                mean_measurement = calculate_mean_measurement(measurements)
 
-            # add_soil_data(payload)
+                # Print the mean measurement for debugging
+                print(f"Mean Measurement: {mean_measurement}")
+
+                # Get AI recommendations for the mean measurement
+                recommendations = getAIRecommendation(getValues(mean_measurement))
+                print("Recommended Crop: ", recommendations)
+
+                # Publish the recommendation back to the MQTT broker
+                client.publish(MQTT_TOPIC_PUBLISH, json.dumps( recommendations))
+            else:
+                print("❌ Payload does not contain a valid 'measurements' array")
         except json.JSONDecodeError:
             print("❌ Failed to decode JSON from message payload")
             return
+        except Exception as e:
+            print(f"❌ An error occurred: {e}")
     
 
 # MQTT Start Function
@@ -78,11 +91,40 @@ def start_mqtt():
 
     client.connect(MQTT_BROKER, MQTT_PORT, 60)
 
+    client.loop_start()
+
     # thread = threading.Thread(target=client.loop_forever)
     # thread.daemon = True
     # thread.start()
 
+def calculate_mean_measurement(measurements):
+    # Initialize a dictionary to store the sum of each field
+    mean_measurement = {
+        "ph": 0,
+        "temperature": 0,
+        "humidity": 0,
+        "nitrogen": 0,
+        "phosphorus": 0,
+        "potassium": 0,
+        "ec": 0
+    }
 
+    # Iterate through each measurement and sum up the values
+    for measurement in measurements:
+        mean_measurement["ph"] += measurement.get("ph", 0)
+        mean_measurement["temperature"] += measurement.get("temperature", 0)
+        mean_measurement["humidity"] += measurement.get("humidity", 0)
+        mean_measurement["nitrogen"] += measurement.get("nitrogen", 0)
+        mean_measurement["phosphorus"] += measurement.get("phosphorus", 0)
+        mean_measurement["potassium"] += measurement.get("potassium", 0)
+        mean_measurement["ec"] += measurement.get("ec", 0)
+
+    # Calculate the mean for each field
+    num_measurements = len(measurements)
+    for key in mean_measurement:
+        mean_measurement[key] /= num_measurements
+
+    return mean_measurement
 
 
 
