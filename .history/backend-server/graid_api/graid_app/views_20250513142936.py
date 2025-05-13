@@ -217,7 +217,7 @@ def getValues(soil_data):
     potassium=soil_data.get('potassium'),
     ec=soil_data.get('ec'),
     print([float(nitrogen[0]), float(phosphorus[0]), float(potassium[0]), float(temperature[0]), float(humidity[0]), float(ph[0])])
-    return [float(nitrogen[0]*100), float(phosphorus[0]*100), float(potassium[0]*100), float(temperature[0]), float(humidity[0]), float(ph[0])]
+    return [float(nitrogen[0]), float(phosphorus[0]), float(potassium[0]), float(temperature[0]), float(humidity[0]), float(ph[0])]
 
 
 def getAIRecommendation(user_input):

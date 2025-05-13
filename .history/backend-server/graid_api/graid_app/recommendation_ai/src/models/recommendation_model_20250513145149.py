@@ -54,8 +54,8 @@ class RecommendationModel:
         print(soil_features)
         
         # Map probabilities to class labels
-        class_labels = self.label_encoder.inverse_transform(np.arange(len(probabilities)))
-        predictions_with_confidence = {label: f"{round(prob * 100, 3)}%" for label, prob in zip(class_labels, probabilities) if round(prob * 100, 3) }
+        class_labels = self.label_encoder.inverse_transform(range(len(probabilities)))
+        predictions_with_confidence = {label: f"{round(prob * 100, 3)}%" for label, prob in zip(class_labels, probabilities) if round(prob * 100, 3) > 0.00}
         sorted_predictions = dict(sorted(predictions_with_confidence.items(), key=lambda item: float(item[1][:-1]), reverse=True))
         
         return sorted_predictions
