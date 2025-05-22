@@ -103,7 +103,7 @@ def calculate_mean_measurement(measurements):
     mean_measurement = {
         "ph": 0,
         "temperature": 0,
-        "soilMoisture": 0,
+        "humidity": 0,
         "nitrogen": 0,
         "phosphorus": 0,
         "potassium": 0,
@@ -114,7 +114,7 @@ def calculate_mean_measurement(measurements):
     for measurement in measurements:
         mean_measurement["ph"] += float(measurement.get("ph", 0))
         mean_measurement["temperature"] += float(measurement.get("temperature", 0))
-        mean_measurement["soilMoisture"] += float(measurement.get("soilMoisture", 0))
+        mean_measurement["humidity"] += float(measurement.get("soilMoisture", 0))
         mean_measurement["nitrogen"] += float(measurement.get("nitrogen", 0))
         mean_measurement["phosphorus"] += float(measurement.get("phosphorus", 0))
         mean_measurement["potassium"] += float(measurement.get("potassium", 0))
@@ -168,7 +168,7 @@ def add_soil_data(soil_data):
     soil = Soil(
         ph=soil_data.get('ph'),
         temperature=soil_data.get('temperature'),
-        humidity=soil_data.get('soilMoisture'),
+        humidity=soil_data.get('humidity'),
         nitrogen=soil_data.get('nitrogen'),
         phosphorus=soil_data.get('phosphorus'),
         potassium=soil_data.get('potassium'),
@@ -193,27 +193,23 @@ def train_model():
 
 
 def getValues(soil_data):
-    ph = soil_data.get('ph')
-    temperature = soil_data.get('temperature')
-    humidity = soil_data.get('soilMoisture')
-    nitrogen = soil_data.get('nitrogen')
-    phosphorus = soil_data.get('phosphorus')
-    potassium = soil_data.get('potassium')
 
-    
-
-    print([float(nitrogen), float(phosphorus), float(potassium), float(temperature), float(humidity), float(ph)])
-    return [float(nitrogen), float(phosphorus), float(potassium), float(temperature), float(humidity), float(ph)]
+    ph=soil_data.get('ph'),
+    temperature=soil_data.get('temperature'),
+    humidity=soil_data.get('soilMoisture'),
+    nitrogen=soil_data.get('nitrogen'),
+    phosphorus=soil_data.get('phosphorus'),
+    potassium=soil_data.get('potassium'),
+   
+    print([float(nitrogen[0]), float(phosphorus[0]), float(potassium[0]), float(temperature[0]), float(humidity[0]), float(ph[0])])
+    return [float(nitrogen[0]), float(phosphorus[0]), float(potassium[0]), float(temperature[0]), float(humidity[0]), float(ph[0])]
 
 
 def getAIRecommendation(user_input):
     global recommendation_service
     recommended_crop = recommendation_service.predict(user_input)
-    
     return recommended_crop
 
 
 def test(request):
     return HttpResponse("Hello, world. You're at the Test View.")
-
-

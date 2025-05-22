@@ -55,10 +55,7 @@ ALLOWED_HOSTS = [
     "*",
 ]
 CORS_ALLOWED_ORIGINS = [ # TODO If needed, change the URLs of the frontend and backend servers here
-    "http://localhost:3000",# Flutter web app URL
-    "http://127.0.0.1:8000", # DJango server URL
-    "https://graid_app.com",
-    "http://172.20.10.2:3000" # Live server URL
+    "*",# Live server URL
 ]
 
 ROOT_URLCONF = 'graid_api.urls'

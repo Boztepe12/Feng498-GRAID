@@ -1,8 +1,8 @@
 # File: c:\Users\Ege Deniz\Documents\GitHub\Feng498-GRAID\crop-recommendation-ai\src\models\recommendation_model.py
 
-from sklearn.model_selection import cross_val_score, StratifiedKFold, train_test_split, GridSearchCV
+from sklearn.model_selection import GridSearchCV
 
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
 
 from sklearn.naive_bayes import GaussianNB
 
@@ -49,14 +49,13 @@ class RecommendationModel:
             soil_features = pd.DataFrame(soil_features, columns=self.soil_data.drop('label', axis=1).columns)
         
         # Get probabilities for each class
-        probabilities = self.best_model.predict_proba(soil_features)[0]  # Extract the first row
+        probabilities = self.best_model.predict_proba(soil_features)[0]
         print(probabilities)
         print(soil_features)
-        
-        # Map probabilities to class labels
+
+        # Map probabilities to class labels (individual, not cumulative)
         class_labels = self.label_encoder.inverse_transform(np.arange(len(probabilities)))
-        predictions_with_confidence = {label: f"{round(prob * 100, 3)}%" for label, prob in zip(class_labels, probabilities) if prob > 0}
+        predictions_with_confidence = {label: f"{round(prob * 100, 3)}%" for label, prob in zip(class_labels, probabilities)}
         sorted_predictions = dict(sorted(predictions_with_confidence.items(), key=lambda item: float(item[1][:-1]), reverse=True))
-        print(sorted_predictions)
         
         return sorted_predictions

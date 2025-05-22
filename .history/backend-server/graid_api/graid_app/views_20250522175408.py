@@ -193,17 +193,18 @@ def train_model():
 
 
 def getValues(soil_data):
-    ph = soil_data.get('ph')
-    temperature = soil_data.get('temperature')
-    humidity = soil_data.get('soilMoisture')
-    nitrogen = soil_data.get('nitrogen')
-    phosphorus = soil_data.get('phosphorus')
-    potassium = soil_data.get('potassium')
 
-    
+    ph=soil_data.get('ph'),
+    temperature=soil_data.get('temperature'),
+    humidity=soil_data.get('soilMoisture'),
+    nitrogen=soil_data.get('nitrogen'),
+    phosphorus=soil_data.get('phosphorus'),
+    potassium=soil_data.get('potassium'),
 
-    print([float(nitrogen), float(phosphorus), float(potassium), float(temperature), float(humidity), float(ph)])
-    return [float(nitrogen), float(phosphorus), float(potassium), float(temperature), float(humidity), float(ph)]
+    nitrogen,phosphorus, potassium = convert_npk_to_ratio(float(nitrogen[0]), float(phosphorus[0]), float(potassium[0]))
+   
+    print([float(nitrogen[0]), float(phosphorus[0]), float(potassium[0]), float(temperature[0]), float(humidity[0]), float(ph[0])])
+    return [float(nitrogen[0]), float(phosphorus[0]), float(potassium[0]), float(temperature[0]), float(humidity[0]), float(ph[0])]
 
 
 def getAIRecommendation(user_input):
@@ -216,4 +217,35 @@ def getAIRecommendation(user_input):
 def test(request):
     return HttpResponse("Hello, world. You're at the Test View.")
 
+def convert_npk_to_ratio(n, p, k, min_vals=(0, 5, 5), max_vals=(140, 145, 205)):
+    """
+    Converts N, P, K values (in mg/kg) to a normalized N:P:K ratio.
+    
+    Parameters:
+    - n, p, k: actual NPK values in mg/kg
+    - min_vals: tuple of minimum NPK values (default: (0, 5, 5))
+    - max_vals: tuple of maximum NPK values (default: (140, 145, 205))
 
+    Returns:
+    - A tuple representing the N:P:K ratio (scaled and rounded)
+    """
+    # Normalize each nutrient between 0 and 1
+    def normalize(val, min_val, max_val):
+        return max(0, min((val - min_val) / (max_val - min_val), 1))
+
+    n_norm = normalize(n, min_vals[0], max_vals[0])
+    p_norm = normalize(p, min_vals[1], max_vals[1])
+    k_norm = normalize(k, min_vals[2], max_vals[2])
+
+    # To avoid division by zero in ratio, ensure at least small positive values
+    n_norm = n_norm or 1e-6
+    p_norm = p_norm or 1e-6
+    k_norm = k_norm or 1e-6
+
+    # Normalize all by the smallest to get the relative ratio
+    min_norm = min(n_norm, p_norm, k_norm)
+    ratio_n = round(n_norm / min_norm, 2)
+    ratio_p = round(p_norm / min_norm, 2)
+    ratio_k = round(k_norm / min_norm, 2)
+
+    return (ratio_n, ratio_p, ratio_k)

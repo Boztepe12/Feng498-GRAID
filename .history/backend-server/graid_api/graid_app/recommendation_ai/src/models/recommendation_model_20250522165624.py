@@ -57,6 +57,5 @@ class RecommendationModel:
         class_labels = self.label_encoder.inverse_transform(np.arange(len(probabilities)))
         predictions_with_confidence = {label: f"{round(prob * 100, 3)}%" for label, prob in zip(class_labels, probabilities) if prob > 0}
         sorted_predictions = dict(sorted(predictions_with_confidence.items(), key=lambda item: float(item[1][:-1]), reverse=True))
-        print(sorted_predictions)
         
         return sorted_predictions
