@@ -24,10 +24,10 @@ class RecommendationModel:
         self.label_encoder.fit(y)
         
         param_grid = {
-            'n_estimators': [200],
-            'max_depth': [10],
-            'min_samples_split': [2],
-            'min_samples_leaf': [1],
+            'n_estimators': [100, 200],
+            'max_depth': [5, 10, 20],
+            'min_samples_split': [2, 5],
+            'min_samples_leaf': [1, 2],
             
         }
 

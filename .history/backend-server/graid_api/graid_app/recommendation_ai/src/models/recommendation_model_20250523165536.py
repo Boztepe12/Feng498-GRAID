@@ -3,7 +3,7 @@
 from sklearn.model_selection import  GridSearchCV
 
 
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import pandas as pd
 import numpy as np
@@ -11,24 +11,20 @@ import numpy as np
 class RecommendationModel:
     def __init__(self, soil_data):
         self.soil_data = soil_data
-        self.model = RandomForestClassifier()  
+        self.model = GaussianNB()  
         self.best_model = None
         self.label_encoder = LabelEncoder()
         self.scaler = StandardScaler()
 
     def train(self):
-        self.soil_data = self.soil_data.drop('rainfall', axis=1).drop('humidity',axis = 1)  # Drop rows with missing values
+        self.soil_data = self.soil_data.drop('rainfall', axis=1)  # Drop rows with missing values
         X, y = self.soil_data.drop('label', axis=1), self.soil_data['label']
         
         # Fit the LabelEncoder with the labels
         self.label_encoder.fit(y)
         
         param_grid = {
-            'n_estimators': [200],
-            'max_depth': [10],
-            'min_samples_split': [2],
-            'min_samples_leaf': [1],
-            
+            'var_smoothing': [1e-9, 1e-8, 1e-7, 1e-6, 1e-5]
         }
 
         grid_search = GridSearchCV(self.model, param_grid, cv=5, scoring='accuracy')
@@ -40,37 +36,23 @@ class RecommendationModel:
 
     def predict(self, soil_features):
         if self.best_model is None:
-            raise Exception("Model is not trained yet.")
-
+            raise Exception("Model is not trained yet. Call train() before predict().")
+        
         # Convert soil_features to a DataFrame with the same column names as the training data
         if isinstance(soil_features, list):
             soil_features = pd.DataFrame([soil_features], columns=self.soil_data.drop('label', axis=1).columns)
         elif isinstance(soil_features, np.ndarray):
             soil_features = pd.DataFrame(soil_features, columns=self.soil_data.drop('label', axis=1).columns)
-
-        # Get raw probabilities
-        raw_probabilities = self.best_model.predict_proba(soil_features)[0]
-
-        # Add smoothing to avoid 0% or 100% outputs
-        epsilon = 1e-6
-        smoothed_probs = (raw_probabilities + epsilon) / (raw_probabilities.sum() + epsilon * len(raw_probabilities))
-
-        # Map smoothed probabilities to class labels
-        class_labels = self.label_encoder.inverse_transform(np.arange(len(smoothed_probs)))
-        predictions_with_confidence = {
-            label: f"{round(prob * 100, 0)}%" 
-            for label, prob in zip(class_labels, smoothed_probs)
-        }
-
-        # Sort by descending confidence
-        sorted_predictions = dict(sorted(
-            predictions_with_confidence.items(), 
-            key=lambda item: float(item[1][:-1]), 
-            reverse=True
-        ))
-
-        print("Smoothed probabilities:", smoothed_probs)
-        print("Input features:\n", soil_features)
-        print("Sorted predictions:\n", sorted_predictions)
-
+        
+        # Get probabilities for each class
+        probabilities = self.best_model.predict_proba(soil_features)[0]  # Extract the first row
+        print(probabilities)
+        print(soil_features)
+        
+        # Map probabilities to class labels
+        class_labels = self.label_encoder.inverse_transform(np.arange(len(probabilities)))
+        predictions_with_confidence = {label: f"{round(prob * 100, 3)}%" for label, prob in zip(class_labels, probabilities) if prob > 0}
+        sorted_predictions = dict(sorted(predictions_with_confidence.items(), key=lambda item: float(item[1][:-1]), reverse=True))
+        print(sorted_predictions)
+        
         return sorted_predictions

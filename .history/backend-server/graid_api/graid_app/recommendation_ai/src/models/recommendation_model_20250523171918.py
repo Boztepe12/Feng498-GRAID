@@ -24,10 +24,10 @@ class RecommendationModel:
         self.label_encoder.fit(y)
         
         param_grid = {
-            'n_estimators': [200],
-            'max_depth': [10],
-            'min_samples_split': [2],
-            'min_samples_leaf': [1],
+            'n_estimators': [100, 200],
+            'max_depth': [5, 10, 20],
+            'min_samples_split': [2, 5],
+            'min_samples_leaf': [1, 2],
             
         }
 
@@ -40,7 +40,7 @@ class RecommendationModel:
 
     def predict(self, soil_features):
         if self.best_model is None:
-            raise Exception("Model is not trained yet.")
+            raise Exception("Model is not trained yet. Call train() before predict().")
 
         # Convert soil_features to a DataFrame with the same column names as the training data
         if isinstance(soil_features, list):
@@ -58,7 +58,7 @@ class RecommendationModel:
         # Map smoothed probabilities to class labels
         class_labels = self.label_encoder.inverse_transform(np.arange(len(smoothed_probs)))
         predictions_with_confidence = {
-            label: f"{round(prob * 100, 0)}%" 
+            label: f"{round(prob * 100, 4)}%" 
             for label, prob in zip(class_labels, smoothed_probs)
         }
 

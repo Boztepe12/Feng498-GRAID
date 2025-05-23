@@ -3,7 +3,7 @@
 from sklearn.model_selection import  GridSearchCV
 
 
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import pandas as pd
 import numpy as np
@@ -11,7 +11,7 @@ import numpy as np
 class RecommendationModel:
     def __init__(self, soil_data):
         self.soil_data = soil_data
-        self.model = RandomForestClassifier()  
+        self.model = GaussianNB()  
         self.best_model = None
         self.label_encoder = LabelEncoder()
         self.scaler = StandardScaler()
@@ -24,11 +24,7 @@ class RecommendationModel:
         self.label_encoder.fit(y)
         
         param_grid = {
-            'n_estimators': [200],
-            'max_depth': [10],
-            'min_samples_split': [2],
-            'min_samples_leaf': [1],
-            
+            'var_smoothing': [1e-9, 1e-8, 1e-7, 1e-6, 1e-5]
         }
 
         grid_search = GridSearchCV(self.model, param_grid, cv=5, scoring='accuracy')
@@ -40,7 +36,7 @@ class RecommendationModel:
 
     def predict(self, soil_features):
         if self.best_model is None:
-            raise Exception("Model is not trained yet.")
+            raise Exception("Model is not trained yet. Call train() before predict().")
 
         # Convert soil_features to a DataFrame with the same column names as the training data
         if isinstance(soil_features, list):
@@ -58,7 +54,7 @@ class RecommendationModel:
         # Map smoothed probabilities to class labels
         class_labels = self.label_encoder.inverse_transform(np.arange(len(smoothed_probs)))
         predictions_with_confidence = {
-            label: f"{round(prob * 100, 0)}%" 
+            label: f"{round(prob * 100, 2)}%" 
             for label, prob in zip(class_labels, smoothed_probs)
         }
 
