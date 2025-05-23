@@ -58,8 +58,8 @@ class RecommendationModel:
         # Map smoothed probabilities to class labels
         class_labels = self.label_encoder.inverse_transform(np.arange(len(smoothed_probs)))
         predictions_with_confidence = {
-            label: f"{round(prob * 100, 1)}%" 
-            for label, prob in zip(class_labels, smoothed_probs) if round(prob * 100, 1) > 0
+            label: f"{round(prob * 100, 0)}%" 
+            for label, prob in zip(class_labels, smoothed_probs) if round(prob * 100, 0) > 0
         }
 
         # Sort by descending confidence
